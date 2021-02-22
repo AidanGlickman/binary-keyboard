@@ -1,16 +1,30 @@
 #include <stdio.h>
 #include <Keyboard.h>
 
-int buttonPin0 = 2;
-int buttonPin1 = 3;
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 32
+
+#define OLED_RESET     -1
+#define SCREEN_ADDRESS 0x3C
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+int buttonPin0 = 4;
+int buttonPin1 = 5;
 
 int binarr [7];
 int curr = 0;
 
+char last[] = {'L', 'a', 's', 't', ':', ' ', ' '};
+
 int arrToInt(int arr[]){
   int out = 0;
   for(int i = 0; i < 7; i++){
-    if(arr[i] == 1){
+    if(arr[6-i] == 1){
       out += 1 << i;
     }
   }
@@ -35,30 +49,37 @@ void setup() {
 
   Serial.begin(9600);
   Keyboard.begin();
-  
+  display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
+  display.clearDisplay();
 }
 
 void loop() {
   
   if (digitalRead(buttonPin0) == 0){
-    Serial.println("Button 0 Pressed");
     binarr[curr] = 0;
   }
   else if (digitalRead(buttonPin1) == 0){
-    Serial.println("Button 1 Pressed");
     binarr[curr] = 1;
   }
   else {
     return;
   }
-  printArr(binarr);
-  Serial.println(curr);
-
+  if(curr == 0){
+    display.setTextSize(2);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+  }
+  display.print(binarr[curr]);
+  display.display();
+  
   curr++;
   if(curr == 7){
+    display.clearDisplay();
     int toType = arrToInt(binarr);
-    Serial.println("Done!");
-    Serial.println(toType);
+    display.setCursor(0, 16);
+    last[6] = toType;!
+    display.print(last);
+    display.display();
     Keyboard.write(toType);
     curr = 0;
   }
