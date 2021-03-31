@@ -10,7 +10,7 @@ The Binary Keyboard works by sending a keypress to correspond with 7 binary digi
 
 ### Modifier Keys
 
-When the code for a modifier key (<key>Shift</key>, <key>CTRL</key>, <key>ALT</key>, etc.) is typed on the binary keyboard, it is held in a buffer and sent along with the next printable keypress. This means that if you wanted to type <key>CTRL</key>+<key>C</key>, you would first type `0000000` for Left <key>CTRL</key>, then `1100011` for <key>C</key>. Whenever you are typing keys with modifiers use the lowercase version of the letter, because capital letters send a <key>Shift</key> along with the letter.
+When the code for a modifier key (<kbd>Shift</kbd>, <kbd>CTRL</kbd>, <kbd>ALT</kbd>, etc.) is typed on the binary keyboard, it is held in a buffer and sent along with the next printable keypress. This means that if you wanted to type <kbd>CTRL</kbd>+<kbd>C</kbd>, you would first type `0000000` for Left <kbd>CTRL</kbd>, then `1100011` for <kbd>C</kbd>. Whenever you are typing keys with modifiers use the lowercase version of the letter, because capital letters send a <kbd>Shift</kbd> along with the letter.
 
 # Key Reference Tables
 
