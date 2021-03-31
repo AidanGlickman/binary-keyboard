@@ -2,7 +2,7 @@
 
 The Binary Keyboard is a 2% keyboard that is able to replace all of the functionality of a fullsize keyboard. This repo contains the custom firmware and some schematics that can be used to construct your own Binary Keyboard.
 
-For a video on this project, click [here](https://www.youtube.com/channel/UC4sLvmZVtLhQag4DVqgPQmw).
+For a video on this project, click [here](https://youtu.be/KaikOFklW7U).
 
 ## How to Use
 
