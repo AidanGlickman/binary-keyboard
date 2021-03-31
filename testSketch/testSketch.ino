@@ -19,11 +19,22 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define BUTTONPIN1 5
 
 // Data Buffer
+#define BUFFSIZE 7
 int binarr[7];
 int curr = 0;
 
+// modifiers
+#define MODSTART 128
+bool mods[8] = {0};
+
+// other keys
+int specs[] = {218, 217, 216, 215, 177, 209, 212, 193, 0};
+
+// function keys
+#define FUNCSTART 194
+
 // Char Arr for second line of OLED
-char last[] = {'L', 'a', 's', 't', ':', ' ', ' '};
+char last[] = "Last:  ";
 
 void setup()
 {
@@ -34,10 +45,15 @@ void setup()
   // Start all outputs
   Serial.begin(9600);
   Keyboard.begin();
+  initDisplay();
+}
+
+void initDisplay(){
   display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
   display.clearDisplay();
   display.setTextSize(2);
   display.setTextColor(SSD1306_WHITE);
+  clearBuffLine();
 }
 
 void loop(){
@@ -62,11 +78,43 @@ void loop(){
     int toType = arrToInt(binarr);
     Serial.println(toType);
     lastCharDisplay(toType);
-    Keyboard.write(toType);
+    typeChar(toType);
     curr = 0;
   }
   // small delay to avoid double presses
   delay(250);
+}
+
+void typeChar(int code){
+  if(code <= 7){
+    mods[code] = 1;
+  }
+  else{
+    for(int i = 0; i < sizeof(mods)/sizeof(mods[0]); i++){
+      if(mods[i]){
+        Keyboard.press(i + MODSTART);
+        mods[i] = false;
+      }
+    }
+    if( code >= 11 && code <= 19){
+      Keyboard.press(specs[code - 11]);
+    }
+    else if(code >= 20 && code <= 31){
+      Keyboard.press(code - 20 + FUNCSTART);
+    }
+    else{
+      Keyboard.press(code);
+    }
+  }
+  Keyboard.releaseAll();
+}
+
+// writes spaces for the top line of the display
+void clearBuffLine(){
+  display.setCursor(0, 0);
+  display.print("_______");
+  display.setCursor(0, 0);
+  display.display();
 }
 
 void lastCharDisplay(char toType){
@@ -74,18 +122,15 @@ void lastCharDisplay(char toType){
   display.setCursor(0, 16);
   last[6] = toType;
   display.print(last);
-  display.setCursor(0, 0);
-  display.print("_______");
-  display.setCursor(0, 0);
-  display.display();
+  clearBuffLine();
 }
 
 // converts the built array to an integer using bit shifts
 int arrToInt(int arr[]){
   int out = 0;
-  for (int i = 0; i < 7; i++){
-    // Can remove '6 -' if you want to type in reverse
-    if (arr[6 - i] == 1){
+  for (int i = 0; i < BUFFSIZE; i++){
+    // Can remove '(BUFFSIZE - 1) -' if you want to type in reverse
+    if (arr[(BUFFSIZE - 1) - i] == 1){
       out += 1 << i;
     }
   }
